@@ -6,6 +6,8 @@ import LoginPage from './pages/LoginPage'
 import ListPage from './pages/ListPage'
 import EntryPage from './pages/EntryPage'
 import SettingsPage from './pages/SettingsPage'
+import PrivacyPage from './pages/PrivacyPage'
+import PolicyPage from './pages/PolicyPage'
 import Layout from './components/layout/Layout'
 
 const queryClient = new QueryClient()
@@ -20,6 +22,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={!accessToken ? <LoginPage /> : <Navigate to="/" />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/policy" element={<PolicyPage />} />
 
             <Route element={accessToken ? <Layout /> : <Navigate to="/login" />}>
               <Route path="/" element={<ListPage />} />

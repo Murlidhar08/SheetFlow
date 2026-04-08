@@ -12,18 +12,18 @@ const LoginPage = () => {
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setAccessToken(tokenResponse.access_token)
-      
+
       // Fetch user profile
       const userInfo = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
       })
-      
+
       setUser({
         name: userInfo.data.name,
         email: userInfo.data.email,
         picture: userInfo.data.picture
       })
-      
+
       navigate('/')
     },
     scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
@@ -31,7 +31,7 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-mesh flex items-center justify-center p-6 sm:p-12">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-[1100px] grid md:grid-cols-2 gap-0 overflow-hidden bg-surface-container-lowest rounded-[2.5rem] shadow-[0_32px_96px_-16px_rgba(11,28,48,0.12)] border border-white/40"
@@ -45,7 +45,7 @@ const LoginPage = () => {
               </div>
               <span className="font-headline font-extrabold text-2xl tracking-tight text-on-surface">SheetFlow</span>
             </div>
-            
+
             <h1 className="font-headline font-bold text-5xl leading-tight text-on-surface mb-6">
               The Sanctuary of <span className="text-primary">Financial Clarity</span>
             </h1>
@@ -85,8 +85,8 @@ const LoginPage = () => {
           <div className="max-w-sm w-full mx-auto">
             <h2 className="font-headline font-bold text-3xl text-on-surface mb-2 tracking-tight">Welcome</h2>
             <p className="text-on-surface-variant font-medium mb-12 leading-relaxed">Simple, Flexible, and Cloud-Powered Profit Tracking for the modern achiever.</p>
-            
-            <button 
+
+            <button
               onClick={() => login()}
               className="w-full flex items-center justify-center gap-3 px-6 py-5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold rounded-2xl transition-all duration-300 group border border-outline-variant/10 hover:border-outline-variant/30 active:scale-95 shadow-sm"
             >
@@ -100,7 +100,11 @@ const LoginPage = () => {
             </button>
 
             <div className="mt-12 pt-12 border-t border-outline-variant/10 text-center">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-outline/60">Professional Analytics Suite</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-outline/60 mb-4">Professional Analytics Suite</p>
+              <div className="flex items-center justify-center gap-6">
+                <button onClick={() => navigate('/privacy')} className="text-[10px] cursor-pointer font-bold text-outline hover:text-primary uppercase tracking-widest transition-colors">Privacy</button>
+                <button onClick={() => navigate('/policy')} className="text-[10px] cursor-pointer font-bold text-outline hover:text-primary uppercase tracking-widest transition-colors">Policy</button>
+              </div>
             </div>
           </div>
         </div>
