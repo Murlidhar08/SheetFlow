@@ -9,6 +9,9 @@ interface SheetSettings {
   buyColumn: string
   repairColumn: string
   sellColumn: string
+  transportColumn: string
+  totalCostColumn: string
+  profitColumn: string
 }
 
 interface User {
@@ -40,6 +43,9 @@ export const useSheetStore = create<SheetState>()(
         buyColumn: 'Buy Price',
         repairColumn: 'Repair Cost',
         sellColumn: 'Sell Price',
+        transportColumn: 'Transport',
+        totalCostColumn: 'Total Cost',
+        profitColumn: 'Profit',
       },
       setUser: (user) => set({ user }),
       setAccessToken: (accessToken) => set({ accessToken }),

@@ -35,7 +35,7 @@ const Layout = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={handleLogout}
             className="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-colors"
             title="Logout"
@@ -61,7 +61,7 @@ const Layout = () => {
       </main>
 
       {/* Bottom Nav (Mobile style as per design) */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 glass-panel border border-outline-variant/20 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2">
+      <nav className="fixed bottom-0 left-0 right-0 glass-panel border border-outline-variant/20 px-4 py-3 shadow-2xl flex justify-center items-center gap-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path
           const Icon = item.icon
@@ -71,8 +71,8 @@ const Layout = () => {
               to={item.path}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300",
-                isActive 
-                  ? "bg-primary text-white shadow-lg shadow-primary/25" 
+                isActive
+                  ? "bg-primary text-white shadow-lg shadow-primary/25"
                   : "text-on-surface-variant hover:bg-surface-container"
               )}
             >

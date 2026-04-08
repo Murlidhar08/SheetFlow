@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSheetStore } from '../store/useSheetStore'
-import { ExternalLink, Database, LayoutGrid, Info, Columns, Edit3, Check, X } from 'lucide-react'
+import { ExternalLink, Database, LayoutGrid, Info, Columns, Edit3, Check, X, Calculator } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchSheetData, updateHeaders, listSpreadsheets, getSheetNames } from '../lib/google-sheets'
@@ -86,6 +86,49 @@ const SettingsPage = () => {
         },
       ]
     },
+    {
+      id: 'calculation',
+      title: 'Calculation',
+      icon: Calculator,
+      fields: [
+        {
+          label: 'Buy Price Column',
+          key: 'buyColumn',
+          type: 'select',
+          options: (headers || []).map(name => ({ value: name, label: name }))
+        },
+        {
+          label: 'Sell Price Column',
+          key: 'sellColumn',
+          type: 'select',
+          options: (headers || []).map(name => ({ value: name, label: name }))
+        },
+        {
+          label: 'Total Cost Column',
+          key: 'totalCostColumn',
+          type: 'select',
+          options: (headers || []).map(name => ({ value: name, label: name }))
+        },
+        {
+          label: 'Repair Cost Column',
+          key: 'repairColumn',
+          type: 'select',
+          options: (headers || []).map(name => ({ value: name, label: name }))
+        },
+        {
+          label: 'Transport Cost Column',
+          key: 'transportColumn',
+          type: 'select',
+          options: (headers || []).map(name => ({ value: name, label: name }))
+        },
+        {
+          label: 'Profit Column',
+          key: 'profitColumn',
+          type: 'select',
+          options: (headers || []).map(name => ({ value: name, label: name }))
+        }
+      ]
+    },
   ]
 
   return (
@@ -99,7 +142,8 @@ const SettingsPage = () => {
         <div className="bg-primary/5 rounded-3xl p-6 border border-primary/10 flex gap-4">
           <Info className="w-6 h-6 text-primary shrink-0" />
           <p className="text-sm text-on-surface-variant leading-relaxed">
-            Choose your spreadsheet and tab. SheetFlow will automatically detect your columns and use your mapping for profit calculations.
+            <strong>Spreadsheet ID</strong> can be found in your Google Sheet URL:
+            <code className="mx-1 bg-primary/10 text-primary px-1 rounded">/spreadsheets/d/[ID]/edit</code>.
           </p>
         </div>
 

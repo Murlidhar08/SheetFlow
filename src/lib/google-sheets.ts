@@ -23,15 +23,22 @@ export const getSheetNames = async (spreadsheetId: string, accessToken: string):
   return response.data.sheets?.map((s: any) => s.properties.title) || []
 }
 
-export const fetchSheetData = async (spreadsheetId: string, sheetName: string, accessToken: string): Promise<{ headers: string[], rows: SheetRow[] }> => {
+export const fetchSheetData = async (spreadsheetId: string, sheetName: string, accessToken: string): Promise<{ headers: string[], rows: SheetRow[], sheetId?: number }> => {
   if (!spreadsheetId || !accessToken) return { headers: [], rows: [] }
+
+  // First, get the sheetId for the given sheetName
+  const metaResponse = await axios.get(`${GOOGLE_SHEETS_BASE_URL}/${spreadsheetId}?fields=sheets(properties(title,sheetId))`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  })
+  const sheet = metaResponse.data.sheets?.find((s: any) => s.properties.title === sheetName)
+  const sheetId = sheet?.properties.sheetId
 
   const response = await axios.get(`${GOOGLE_SHEETS_BASE_URL}/${spreadsheetId}/values/'${sheetName}'!A1:Z1000`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   })
 
   const values = response.data.values || []
-  if (values.length === 0) return { headers: [], rows: [] }
+  if (values.length === 0) return { headers: [], rows: [], sheetId }
 
   const headers = values[0]
   const rows = values.slice(1).map((row: any[], index: number) => {
@@ -45,7 +52,7 @@ export const fetchSheetData = async (spreadsheetId: string, sheetName: string, a
     }
   })
 
-  return { headers, rows }
+  return { headers, rows, sheetId }
 }
 
 export const addSheetRow = async (spreadsheetId: string, sheetName: string, headers: string[], rowValues: Record<string, any>, accessToken: string) => {
@@ -71,4 +78,23 @@ export const updateHeaders = async (spreadsheetId: string, sheetName: string, he
     { values: [headers] },
     { headers: { Authorization: `Bearer ${accessToken}` } }
   )
+}
+
+export const deleteSheetRow = async (spreadsheetId: string, sheetId: number, rowIndex: number, accessToken: string) => {
+  // Note: rowIndex here is 1-based from the API response but deleteDimension uses 0-based indices.
+  // Row 1 is headers, so Row 2 (index 1 in our data) is actually index 1 in deleteDimension as well.
+  await axios.post(`${GOOGLE_SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`, {
+    requests: [{
+      deleteDimension: {
+        range: {
+          sheetId,
+          dimension: 'ROWS',
+          startIndex: rowIndex - 1,
+          endIndex: rowIndex
+        }
+      }
+    }]
+  }, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  })
 }

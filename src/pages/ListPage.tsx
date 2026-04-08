@@ -37,8 +37,9 @@ const ListPage = () => {
   const totalProfit = rows.reduce((acc, row) => {
     const buy = parseFloat(row.values[settings.buyColumn]) || 0
     const repair = parseFloat(row.values[settings.repairColumn]) || 0
+    const transport = parseFloat(row.values[settings.transportColumn]) || 0
     const sell = parseFloat(row.values[settings.sellColumn]) || 0
-    return acc + (sell - (buy + repair))
+    return acc + (sell - (buy + repair + transport))
   }, 0)
 
   return (
@@ -89,8 +90,9 @@ const ListPage = () => {
           rows.map((row) => {
             const buy = parseFloat(row.values[settings.buyColumn]) || 0
             const repair = parseFloat(row.values[settings.repairColumn]) || 0
+            const transport = parseFloat(row.values[settings.transportColumn]) || 0
             const sell = parseFloat(row.values[settings.sellColumn]) || 0
-            const profit = sell - (buy + repair)
+            const profit = sell - (buy + repair + transport)
 
             return (
               <motion.div
