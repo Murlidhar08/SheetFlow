@@ -20,30 +20,34 @@ const Layout = () => {
     { path: '/settings', label: 'Settings', icon: Settings },
   ]
 
+  const isEntryPage = location.pathname === '/entry' || location.pathname.startsWith('/entry/')
+
   return (
     <div className="min-h-screen flex flex-col bg-mesh">
-      {/* Header */}
-      <header className="sticky top-0 z-50 glass-panel border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-            <LayoutDashboard className="text-white w-6 h-6" />
-          </Link>
-          <div>
-            <span className="font-headline font-extrabold text-xl tracking-tight text-on-surface block">SheetFlow</span>
-            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">{user?.email}</span>
+      {/* Header - Hidden on entry focused pages */}
+      {!isEntryPage && (
+        <header className="sticky top-0 z-50 glass-panel border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link to="/" className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+              <LayoutDashboard className="text-white w-6 h-6" />
+            </Link>
+            <div>
+              <span className="font-headline font-extrabold text-xl tracking-tight text-on-surface block">SheetFlow</span>
+              <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest leading-none mt-1">{user?.email}</span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleLogout}
-            className="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-colors"
-            title="Logout"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-        </div>
-      </header>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleLogout}
+              className="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </header>
+      )}
 
       {/* Main Content */}
       <main className="flex-grow pb-24">

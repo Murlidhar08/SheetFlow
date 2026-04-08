@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchSheetData, addSheetRow, updateSheetRow, deleteSheetRow } from '../lib/google-sheets'
 import { useSheetStore } from '../store/useSheetStore'
-import { ChevronLeft, Save, Trash2, Loader2, TrendingUp, TrendingDown } from 'lucide-react'
+import { ChevronLeft, Save, Trash2, Loader2, TrendingUp, TrendingDown, ClipboardList } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '../lib/utils'
 
@@ -40,17 +40,13 @@ const EntryPage = () => {
     }
   }, [rowIndex, data, settings])
 
-  // Multi-stage Auto-calculation
   useEffect(() => {
     const buy = parseFloat(formData[settings.buyColumn]) || 0
     const repair = parseFloat(formData[settings.repairColumn]) || 0
     const transport = parseFloat(formData[settings.transportColumn]) || 0
     const sell = parseFloat(formData[settings.sellColumn]) || 0
-    
-    // 1. Calculate Total Cost
+
     const totalCost = (buy + repair + transport).toString()
-    
-    // 2. Calculate Profit based on Total Cost
     const profit = (sell - parseFloat(totalCost)).toString()
 
     const updates: Record<string, string> = {}
@@ -98,15 +94,16 @@ const EntryPage = () => {
   }
 
   const handleDelete = () => {
-    if (window.confirm('Are you absolutely sure you want to delete this record? This action cannot be undone.')) {
+    if (window.confirm('Delete this record permanently? This cannot be undone.')) {
       deleteMutation.mutate()
     }
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-24">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+      <div className="flex flex-col items-center justify-center p-24 text-primary">
+        <Loader2 className="w-12 h-12 animate-spin mb-4" />
+        <p className="font-headline font-bold uppercase tracking-widest text-[10px]">Loading Vault...</p>
       </div>
     )
   }
@@ -115,100 +112,111 @@ const EntryPage = () => {
   const profit = parseFloat(formData[settings.profitColumn]) || 0
 
   return (
-    <div className="p-6 max-w-2xl mx-auto pb-24">
-      <div className="flex items-center justify-between mb-8">
-        <button 
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto pb-32">
+      <div className="flex items-center justify-between mb-8 sm:mb-12">
+        <button
           onClick={() => navigate('/')}
-          className="p-3 bg-surface-container hover:bg-surface-container-high rounded-2xl text-on-surface-variant transition-colors"
+          className="p-3 bg-surface-container hover:bg-surface-container-high rounded-2xl text-on-surface-variant transition-all active:scale-90"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <h2 className="font-headline font-bold text-2xl text-on-surface">
-          {rowIndex ? 'Refine Record' : 'Log New Asset'}
-        </h2>
-        <div className="w-12 h-12" />
+        <div className="flex flex-col items-center">
+          <h2 className="font-headline font-black text-2xl sm:text-3xl text-on-surface tracking-tight leading-none mb-1">
+            {rowIndex ? 'Update Vault' : 'Secure Entry'}
+          </h2>
+          <span className="text-[10px] font-bold text-outline uppercase tracking-widest">{rowIndex ? `Editing Row #${rowIndex}` : 'New Transaction'}</span>
+        </div>
+        <div className="w-12 h-12 flex items-center justify-center text-primary/30">
+          <ClipboardList className="w-6 h-6" />
+        </div>
       </div>
 
-      <motion.form 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <motion.form
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
         onSubmit={handleSubmit}
-        className="space-y-8"
+        className="space-y-6 sm:space-y-10"
       >
-        {/* Live Calculation Display */}
+        {/* Dynamic Profit Card - Responsive sizing */}
         <div className={cn(
-          "p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden transition-colors duration-500",
-          profit >= 0 ? "bg-primary shadow-primary/20" : "bg-error shadow-error/20"
+          "p-8 sm:p-12 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden transition-all duration-700",
+          profit >= 0 ? "bg-primary shadow-primary/25" : "bg-error shadow-error/25"
         )}>
           <div className="relative z-10">
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-80 mb-2">Real-time Performance</p>
-            <div className="flex items-end gap-2">
-              <h3 className="font-headline font-black text-5xl tracking-tight leading-none">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] mb-4 opacity-70 text-center sm:text-left">Yield Assessment</p>
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-3 sm:gap-4 overflow-hidden">
+              <h3 className="font-headline font-black text-4xl sm:text-5xl md:text-6xl tracking-tighter leading-none break-all text-center sm:text-left">
                 {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(profit)}
               </h3>
-              {profit >= 0 ? <TrendingUp className="w-8 h-8 mb-1" /> : <TrendingDown className="w-8 h-8 mb-1" />}
+              <div className="flex items-center gap-2 pb-1">
+                {profit >= 0 ? <TrendingUp className="w-8 h-8 opacity-80" /> : <TrendingDown className="w-8 h-8 opacity-80" />}
+              </div>
             </div>
-            <p className="mt-4 text-xs font-medium opacity-70">
-              Formula: Sell - (Buy + Repair + Transport)
+            <p className="mt-8 text-[10px] font-bold opacity-60 uppercase tracking-[0.2em] border-t border-white/10 pt-4 text-center sm:text-left">
+              Net Profit calculated after all operational costs
             </p>
           </div>
-          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl font-black text-8xl flex items-center justify-center pointer-events-none">
-            {profit >= 0 ? '+' : '-'}
-          </div>
+          <div className="absolute -right-16 -bottom-16 w-56 h-56 bg-white/10 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute -left-10 -top-10 w-32 h-32 bg-black/10 rounded-full blur-3xl pointer-events-none" />
         </div>
 
-        <div className="bg-surface-container-low rounded-[2.5rem] p-8 space-y-6">
+        <div className="bg-surface-container-low/50 rounded-[3rem] p-6 sm:p-10 space-y-8 border border-outline-variant/10 shadow-inner">
           {headers.map((header) => {
             const isAuto = [settings.profitColumn, settings.totalCostColumn].includes(header)
             const isNumeric = [settings.buyColumn, settings.sellColumn, settings.repairColumn, settings.transportColumn, settings.totalCostColumn, settings.profitColumn].includes(header)
-            
+
             return (
-              <div key={header} className="space-y-2">
-                <label 
-                  className={cn(
-                    "flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors",
-                    isNumeric ? (isAuto ? "text-secondary" : "text-primary") : "text-outline/80"
-                  )}
-                >
-                  {header}
-                  {isAuto && <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded text-[8px] tracking-normal">CALCULATED</span>}
-                </label>
+              <div key={header} className="space-y-3 group">
+                <div className="flex items-center justify-between px-1">
+                  <label
+                    className={cn(
+                      "text-[10px] sm:text-xs font-black uppercase tracking-widest transition-colors",
+                      isNumeric ? (isAuto ? "text-secondary" : "text-primary") : "text-outline"
+                    )}
+                  >
+                    {header}
+                  </label>
+                  {isAuto && <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-[4px] text-[8px] font-black tracking-widest uppercase">Computed</span>}
+                </div>
                 <input
                   type={isNumeric ? 'number' : 'text'}
                   readOnly={isAuto}
                   value={formData[header] || ''}
+                  autoComplete="off"
                   onChange={(e) => setFormData({ ...formData, [header]: e.target.value })}
                   className={cn(
-                    "w-full ledger-input font-headline font-bold text-xl py-2",
-                    isAuto && "bg-surface-container/30 opacity-70 cursor-not-allowed border-dashed"
+                    "w-full bg-surface-container-lowest border-0 rounded-2xl py-4 sm:py-5 px-6 font-headline font-black text-xl sm:text-2xl transition-all shadow-sm ring-1 ring-outline-variant/10 focus:ring-4 focus:ring-primary/10",
+                    isAuto && "bg-surface-container opacity-60 cursor-not-allowed ring-0 shadow-none border-t border-b border-dashed border-outline-variant/30"
                   )}
-                  placeholder={isAuto ? 'Auto-calculated' : `Enter ${header}...`}
+                  placeholder={isAuto ? 'SYSTEM GENERATED' : `Enter ${header}`}
                 />
               </div>
             )
           })}
         </div>
 
-        <button
-          type="submit"
-          disabled={mutation.isPending}
-          className="w-full flex items-center justify-center gap-3 py-5 bg-on-surface text-white font-bold rounded-2xl hover:bg-on-surface/90 active:scale-95 transition-all shadow-xl disabled:opacity-50"
-        >
-          {mutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
-          <span className="text-lg">{rowIndex ? 'Update Records' : 'Commit Entry'}</span>
-        </button>
-
-        {rowIndex && (
+        <div className="space-y-4">
           <button
-            type="button"
-            onClick={handleDelete}
-            disabled={deleteMutation.isPending}
-            className="w-full flex items-center justify-center gap-3 py-4 text-error font-bold rounded-2xl hover:bg-error-container/20 transition-all font-headline uppercase tracking-widest text-xs disabled:opacity-50"
+            type="submit"
+            disabled={mutation.isPending || deleteMutation.isPending}
+            className="w-full flex items-center justify-center gap-4 py-6 bg-on-surface text-white font-headline font-black rounded-[2.5rem] hover:bg-primary active:scale-[0.98] transition-all shadow-2xl disabled:opacity-50 text-lg tracking-tighter"
           >
-            {deleteMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
-            <span>{deleteMutation.isPending ? 'Removing...' : 'Remove Entry Permanently'}</span>
+            {mutation.isPending ? <Loader2 className="w-7 h-7 animate-spin" /> : <Save className="w-7 h-7" />}
+            <span>{rowIndex ? 'Sync Records' : 'Add Entry'}</span>
           </button>
-        )}
+
+          {rowIndex && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending || mutation.isPending}
+              className="w-full flex items-center justify-center gap-3 py-5 text-error font-headline font-black rounded-3xl hover:bg-error-container/20 active:scale-95 transition-all uppercase tracking-widest text-xs disabled:opacity-30"
+            >
+              {deleteMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+              <span>{deleteMutation.isPending ? 'Wiping record...' : 'Wipe From Vault'}</span>
+            </button>
+          )}
+        </div>
       </motion.form>
     </div>
   )
