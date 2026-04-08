@@ -1,4 +1,4 @@
-# 📊 Profit Calculator (Google Sheets Based)
+# 📊 SheetFlow
 
 ## 🚀 Tagline
 
