@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSheetStore } from '../../store/useSheetStore'
-import { LayoutDashboard, Settings, PlusCircle, LogOut, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, Settings, PlusCircle, LogOut } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 

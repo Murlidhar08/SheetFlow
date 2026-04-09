@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useSheetStore } from '../store/useSheetStore'
-import { ExternalLink, Database, LayoutGrid, Info, Columns, Edit3, Check, X, Calculator, ShieldCheck } from 'lucide-react'
+import { ExternalLink, Database, LayoutGrid, Info, Columns, Edit3, Check, X, Calculator } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '../lib/utils'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchSheetData, updateHeaders, getSheetNames } from '../lib/google-sheets'
 
