@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchSheetData } from '../lib/google-sheets'
 import { useSheetStore } from '../store/useSheetStore'
 import { formatCurrency, cn } from '../lib/utils'
-import { ArrowUpRight, ArrowDownRight, Search, Plus, Filter, X, BarChart3 } from 'lucide-react'
+import { ArrowUpRight, ArrowDownRight, Search, Filter, X, BarChart3 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -118,7 +118,7 @@ const ListPage = () => {
       </div>
 
       {/* Assets Grid/List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6">
         {isLoading ? (
           Array(6).fill(0).map((_, i) => (
             <div key={i} className="h-28 sm:h-32 bg-surface-container-low rounded-[2.5rem] animate-pulse" />
@@ -150,13 +150,13 @@ const ListPage = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   onClick={() => navigate(`/entry/${row.rowIndex}`)}
-                  className="group px-4 py-3 bg-surface-container-lowest hover:bg-white rounded-[2.5rem] transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl border border-transparent hover:border-outline-variant/20 flex items-center gap-5"
+                  className="group px-4 md:px-6 py-3 md:py-4 bg-surface-container-lowest hover:bg-white rounded-[2.5rem] transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl border border-transparent hover:border-outline-variant/20 flex items-center gap-5"
                 >
                   <div className={cn(
-                    "w-12 h-12 rounded-3xl flex items-center justify-center shrink-0 transition-all duration-700 group-hover:rounded-[1.5rem] group-hover:rotate-[15deg]",
+                    "w-12 md:w-16 h-12 md:h-16 rounded-3xl flex items-center justify-center shrink-0 transition-all duration-700 group-hover:rounded-[1.5rem] group-hover:rotate-[15deg]",
                     profit >= 0 ? "bg-secondary-container/10 text-secondary" : "bg-error-container/10 text-error"
                   )}>
-                    {profit >= 0 ? <ArrowUpRight className="w-7 h-7" /> : <ArrowDownRight className="w-7 h-7" />}
+                    {profit >= 0 ? <ArrowUpRight className="w-7 md:w-10 h-7 md:h-10" /> : <ArrowDownRight className="w-7 md:w-10 h-7 md:h-10" />}
                   </div>
 
                   <div className="flex-grow min-w-0">

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Gavel, ArrowLeft, BadgeCheck, Scale, Globe } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -8,7 +7,7 @@ const PolicyPage = () => {
   return (
     <div className="min-h-screen bg-mesh p-6 sm:p-12 lg:p-20">
       <div className="max-w-3xl mx-auto">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="mb-12 flex items-center gap-2 text-primary font-headline font-black uppercase tracking-widest text-xs hover:gap-3 transition-all"
         >
