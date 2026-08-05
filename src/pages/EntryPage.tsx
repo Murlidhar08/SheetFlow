@@ -21,6 +21,8 @@ const EntryPage = () => {
     enabled: !!settings.spreadsheetId && !!accessToken
   })
 
+  const computedColumns = [settings.totalCostColumn, settings.profitColumn].filter(Boolean)
+
   useEffect(() => {
     if (rowIndex && data?.rows) {
       const row = data.rows.find(r => r.rowIndex === rowIndex)
@@ -30,9 +32,9 @@ const EntryPage = () => {
     } else if (data?.headers && !rowIndex) {
       const initials: Record<string, string> = {}
       data.headers.forEach(h => {
-        if ([settings.buyColumn, settings.sellColumn, settings.repairColumn, settings.transportColumn, settings.totalCostColumn, settings.profitColumn].includes(h)) {
+        if ([settings.buyColumn, settings.sellColumn, settings.repairColumn, settings.transportColumn].includes(h)) {
           initials[h] = '0'
-        } else {
+        } else if (!computedColumns.includes(h)) {
           initials[h] = ''
         }
       })
@@ -40,37 +42,13 @@ const EntryPage = () => {
     }
   }, [rowIndex, data, settings])
 
-  useEffect(() => {
-    const buy = parseFloat(formData[settings.buyColumn]) || 0
-    const repair = parseFloat(formData[settings.repairColumn]) || 0
-    const transport = parseFloat(formData[settings.transportColumn]) || 0
-    const sellText = formData[settings.sellColumn]
-    const sell = parseFloat(sellText) || 0
-    const isInStock = !sellText || sell === 0
-
-    const totalCost = (buy + repair + transport).toString()
-    const profit = isInStock ? '0' : (sell - parseFloat(totalCost)).toString()
-
-    const updates: Record<string, string> = {}
-    if (settings.totalCostColumn && formData[settings.totalCostColumn] !== totalCost) {
-      updates[settings.totalCostColumn] = totalCost
-    }
-    if (settings.profitColumn && formData[settings.profitColumn] !== profit) {
-      updates[settings.profitColumn] = profit
-    }
-
-    if (Object.keys(updates).length > 0) {
-      setFormData(prev => ({ ...prev, ...updates }))
-    }
-  }, [formData[settings.buyColumn], formData[settings.repairColumn], formData[settings.transportColumn], formData[settings.sellColumn]])
-
   const mutation = useMutation({
     mutationFn: async () => {
       if (!data?.headers) return
       if (rowIndex) {
-        await updateSheetRow(settings.spreadsheetId, settings.sheetName, data.headers, rowIndex, formData, accessToken!)
+        await updateSheetRow(settings.spreadsheetId, settings.sheetName, data.headers, rowIndex, formData, accessToken!, computedColumns)
       } else {
-        await addSheetRow(settings.spreadsheetId, settings.sheetName, data.headers, formData, accessToken!)
+        await addSheetRow(settings.spreadsheetId, settings.sheetName, data.headers, formData, accessToken!, computedColumns)
       }
     },
     onSuccess: () => {
@@ -111,10 +89,16 @@ const EntryPage = () => {
   }
 
   const headers = data?.headers || []
-  const profit = parseFloat(formData[settings.profitColumn]) || 0
-
+  const buy = parseFloat(formData[settings.buyColumn]) || 0
+  const repair = parseFloat(formData[settings.repairColumn]) || 0
+  const transport = parseFloat(formData[settings.transportColumn]) || 0
   const sellText = formData[settings.sellColumn]
-  const isInStock = !sellText || parseFloat(sellText) === 0
+  const sell = parseFloat(sellText) || 0
+  const isInStock = !sellText || sell === 0
+
+  const computedTotalCost = (buy + repair + transport).toString()
+  const computedProfit = isInStock ? '0' : (sell - (buy + repair + transport)).toString()
+  const profit = parseFloat(computedProfit) || 0
 
   return (
     <div className="p-4 sm:p-6 max-w-2xl mx-auto pb-32">
@@ -175,8 +159,17 @@ const EntryPage = () => {
 
         <div className="bg-surface-container-low/50 rounded-[3rem] p-6 sm:p-10 space-y-8 border border-outline-variant/10 shadow-inner">
           {headers.map((header) => {
-            const isAuto = [settings.profitColumn, settings.totalCostColumn].includes(header)
+            const isAuto = computedColumns.includes(header)
             const isNumeric = [settings.buyColumn, settings.sellColumn, settings.repairColumn, settings.transportColumn, settings.totalCostColumn, settings.profitColumn].includes(header)
+
+            let val = formData[header] || ''
+            if (isAuto) {
+              if (header === settings.totalCostColumn) {
+                val = formData[header] || computedTotalCost
+              } else if (header === settings.profitColumn) {
+                val = formData[header] || computedProfit
+              }
+            }
 
             return (
               <div key={header} className="space-y-3 group">
@@ -194,14 +187,14 @@ const EntryPage = () => {
                 <input
                   type={isNumeric ? 'number' : 'text'}
                   readOnly={isAuto}
-                  value={formData[header] || ''}
+                  value={val}
                   autoComplete="off"
                   onChange={(e) => setFormData({ ...formData, [header]: e.target.value })}
                   className={cn(
                     "w-full bg-surface-container-lowest border-0 rounded-2xl py-4 sm:py-5 px-6 font-headline font-black text-xl sm:text-2xl transition-all shadow-sm ring-1 ring-outline-variant/10 focus:ring-4 focus:ring-primary/10",
                     isAuto && "bg-surface-container opacity-60 cursor-not-allowed ring-0 shadow-none border-t border-b border-dashed border-outline-variant/30"
                   )}
-                  placeholder={isAuto ? 'SYSTEM GENERATED' : `Enter ${header}`}
+                  placeholder={isAuto ? 'AUTO GENERATED FROM FORMULA' : `Enter ${header}`}
                 />
               </div>
             )

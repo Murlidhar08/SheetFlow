@@ -35,26 +35,6 @@ const ListPage = () => {
 
   const allRows = data?.rows || []
 
-  const stats = allRows.reduce((acc, row) => {
-    const buy = parseFloat(row.values[settings.buyColumn]) || 0
-    const repair = parseFloat(row.values[settings.repairColumn]) || 0
-    const transport = parseFloat(row.values[settings.transportColumn]) || 0
-    const totalCost = buy + repair + transport
-
-    const sellText = row.values[settings.sellColumn]
-    const sell = parseFloat(sellText) || 0
-    const isInStock = !sellText || sell === 0
-
-    if (isInStock) {
-      acc.inStockCount += 1
-      acc.inStockSpend += totalCost
-    } else {
-      acc.totalProfit += (sell - totalCost)
-    }
-
-    return acc
-  }, { totalProfit: 0, inStockCount: 0, inStockSpend: 0 })
-
   const filteredRows = allRows.filter(row => {
     const title = (row.values[settings.titleColumn] || '').toLowerCase()
     const description = (row.values[settings.descriptionColumn] || '').toLowerCase()
@@ -64,81 +44,6 @@ const ListPage = () => {
 
   return (
     <div className="p-4 sm:p-6 md:p-10 max-w-5xl mx-auto pb-32">
-      {/* Hero Stats - Responsive scaling */}
-      {/* Dashboard Summary - Responsive Layout */}
-      <section className="mb-10 sm:mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Main Profit Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={cn(
-              "md:col-span-2 p-8 sm:p-10 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group transition-all duration-700",
-              stats.totalProfit >= 0 ? "bg-primary shadow-primary/30" : "bg-error shadow-error/30"
-            )}
-          >
-            <div className="relative z-10">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 opacity-70">Portfolio Net Worth</p>
-              <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6">
-                <h2 className="font-headline font-black text-5xl sm:text-6xl tracking-tighter leading-none break-all">
-                  {formatCurrency(stats.totalProfit)}
-                </h2>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/20 w-fit">
-                  {stats.totalProfit >= 0 ? <ArrowUpRight className="w-3 h-3 text-secondary-container" /> : <ArrowDownRight className="w-3 h-3" />}
-                  <span>{stats.totalProfit >= 0 ? 'Realized Profit' : 'Net Loss'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-all duration-700 transform group-hover:scale-110">
-              <BarChart3 className="w-32 h-32" />
-            </div>
-            <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-6">
-            {/* Active Inventory Count */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="p-8 bg-surface-container-high rounded-4xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group"
-            >
-              <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1 group-hover:text-primary transition-colors">Active Inventory</p>
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <h3 className="font-headline font-black text-4xl text-on-surface">{stats.inStockCount}</h3>
-                  <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-widest mt-1">Units In stock</p>
-                </div>
-                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                  <ClipboardList className="w-7 h-7" />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Inventory Capital */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="p-8 bg-surface-container-high rounded-4xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors group"
-            >
-              <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1 group-hover:text-primary transition-colors">Capital In Stock</p>
-              <div className="flex items-end justify-between gap-4">
-                <div className="min-w-0">
-                  <h3 className="font-headline font-black text-3xl text-on-surface truncate">
-                    {formatCurrency(stats.inStockSpend)}
-                  </h3>
-                  <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-widest mt-1">Total Investment</p>
-                </div>
-                <div className="w-14 h-14 bg-surface-container-lowest border border-outline-variant/10 rounded-2xl flex items-center justify-center text-on-surface/40 shadow-sm group-hover:text-primary transition-colors">
-                  <BarChart3 className="w-7 h-7" />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Responsive Search bar */}
       <div className="mb-8 sm:mb-12 relative">

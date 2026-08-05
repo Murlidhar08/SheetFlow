@@ -55,8 +55,15 @@ export const fetchSheetData = async (spreadsheetId: string, sheetName: string, a
   return { headers, rows, sheetId }
 }
 
-export const addSheetRow = async (spreadsheetId: string, sheetName: string, headers: string[], rowValues: Record<string, any>, accessToken: string) => {
-  const rowArray = headers.map(header => rowValues[header] || '')
+export const addSheetRow = async (
+  spreadsheetId: string,
+  sheetName: string,
+  headers: string[],
+  rowValues: Record<string, any>,
+  accessToken: string,
+  computedColumns: string[] = []
+) => {
+  const rowArray = headers.map(header => computedColumns.includes(header) ? null : (rowValues[header] ?? ''))
 
   await axios.post(`${GOOGLE_SHEETS_BASE_URL}/${spreadsheetId}/values/'${sheetName}'!A1:append?valueInputOption=USER_ENTERED`,
     { values: [rowArray] },
@@ -64,8 +71,16 @@ export const addSheetRow = async (spreadsheetId: string, sheetName: string, head
   )
 }
 
-export const updateSheetRow = async (spreadsheetId: string, sheetName: string, headers: string[], rowIndex: number, rowValues: Record<string, any>, accessToken: string) => {
-  const rowArray = headers.map(header => rowValues[header] || '')
+export const updateSheetRow = async (
+  spreadsheetId: string,
+  sheetName: string,
+  headers: string[],
+  rowIndex: number,
+  rowValues: Record<string, any>,
+  accessToken: string,
+  computedColumns: string[] = []
+) => {
+  const rowArray = headers.map(header => computedColumns.includes(header) ? null : (rowValues[header] ?? ''))
 
   await axios.put(`${GOOGLE_SHEETS_BASE_URL}/${spreadsheetId}/values/'${sheetName}'!A${rowIndex}:Z${rowIndex}?valueInputOption=USER_ENTERED`,
     { values: [rowArray] },

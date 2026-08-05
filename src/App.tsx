@@ -7,6 +7,7 @@ import { useSheetStore } from './store/useSheetStore'
 
 // Lazy load pages for code splitting
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const ListPage = lazy(() => import('./pages/ListPage'))
 const EntryPage = lazy(() => import('./pages/EntryPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
@@ -36,7 +37,8 @@ function App() {
               <Route path="/policy" element={<PolicyPage />} />
 
               <Route element={accessToken ? <Layout /> : <Navigate to="/login" />}>
-                <Route path="/" element={<ListPage />} />
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/list" element={<ListPage />} />
                 <Route path="/entry" element={<EntryPage />} />
                 <Route path="/entry/:index" element={<EntryPage />} />
                 <Route path="/settings" element={<SettingsPage />} />

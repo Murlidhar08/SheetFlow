@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { LayoutDashboard, LogOut, PlusCircle, Settings } from 'lucide-react'
+import { LayoutDashboard, List, LogOut, PlusCircle, Settings } from 'lucide-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 import { useSheetStore } from '../../store/useSheetStore'
@@ -15,7 +15,8 @@ const Layout = () => {
   }
 
   const navItems = [
-    { path: '/', label: 'Overview', icon: LayoutDashboard },
+    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/list', label: 'List', icon: List },
     { path: '/entry', label: 'Add Entry', icon: PlusCircle },
     { path: '/settings', label: 'Settings', icon: Settings },
   ]
