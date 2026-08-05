@@ -36,10 +36,26 @@ const ListPage = () => {
   const allRows = data?.rows || []
 
   const filteredRows = allRows.filter(row => {
-    const title = (row.values[settings.titleColumn] || '').toLowerCase()
-    const description = (row.values[settings.descriptionColumn] || '').toLowerCase()
-    const query = searchQuery.toLowerCase()
-    return title.includes(query) || description.includes(query)
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase().trim()
+
+    const title = String(row.values[settings.titleColumn] || '').toLowerCase()
+    const description = String(row.values[settings.descriptionColumn] || '').toLowerCase()
+    const rowIndexStr = `#${row.rowIndex}`.toLowerCase()
+    const rowIndexNum = String(row.rowIndex)
+
+    if (
+      title.includes(query) ||
+      description.includes(query) ||
+      rowIndexStr.includes(query) ||
+      rowIndexNum === query
+    ) {
+      return true
+    }
+
+    return Object.values(row.values).some(val =>
+      String(val || '').toLowerCase().includes(query)
+    )
   })
 
   return (
@@ -140,9 +156,14 @@ const ListPage = () => {
                   </div>
 
                   <div className="grow min-w-0">
-                    <h3 className="font-headline font-black text-xl text-on-surface group-hover:text-primary transition-colors truncate mb-1">
-                      {row.values[settings.titleColumn] || 'Log Item'}
-                    </h3>
+                    <div className="flex items-center gap-2.5 mb-1">
+                      <span className="px-2.5 py-0.5 bg-primary/10 text-primary font-headline font-black text-xs rounded-lg shrink-0 tracking-wider">
+                        #{row.rowIndex}
+                      </span>
+                      <h3 className="font-headline font-black text-xl text-on-surface group-hover:text-primary transition-colors truncate">
+                        {row.values[settings.titleColumn] || 'Log Item'}
+                      </h3>
+                    </div>
                     <div className="flex items-center gap-3">
                       <p className="text-on-surface-variant font-bold text-xs truncate max-w-full opacity-60">
                         {row.values[settings.descriptionColumn] || 'Archived record'}
