@@ -182,7 +182,7 @@ const EntryPage = () => {
                   >
                     {header}
                   </label>
-                  {isAuto && <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-[4px] text-[8px] font-black tracking-widest uppercase">Computed</span>}
+                  {isAuto && <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-sm text-[8px] font-black tracking-widest uppercase">Computed</span>}
                 </div>
                 <input
                   type={isNumeric ? 'number' : 'text'}
